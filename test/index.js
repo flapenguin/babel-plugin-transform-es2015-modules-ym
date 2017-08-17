@@ -17,14 +17,24 @@ function attempt(what, message) {
     }
 }
 
-function test(name, source, expected, babelOptions) {
-    const actualProgram = transform(source, Object.assign({}, transformOpts, babelOptions));
+function test(name, source, expected, babelOptions, extraPlugins, extraPlaceholders) {
+    extraPlaceholders = extraPlaceholders || (() => ({}));
+
+    const options = Object.assign({}, transformOpts, babelOptions);
+    options.plugins = options.plugins.concat(extraPlugins || []);
+    const actualProgram = transform(source, options);
 
     const body = actualProgram.ast.program.body;
     assert.equal(body.length, 1, `${name}: file has too many statements`);
     const provideIdentifier = attempt(() => body[0].expression.arguments[2].params[0], `${name}: has no provide`);
 
-    const expectedAst = template(expected)({ PROVIDE: provideIdentifier });
+    const placeholders = Object.assign({ PROVIDE: provideIdentifier }, extraPlaceholders());
+    for (let key in placeholders) {
+        if (typeof placeholders[key] === 'string') {
+            placeholders[key] = t.identifier(placeholders[key]);
+        }
+    }
+    const expectedAst = template(expected)(placeholders);
     const actualCode = actualProgram.code;
     const expectedCode = generate(expectedAst, generatorOpts).code;
 
@@ -99,3 +109,18 @@ test('ym: renaming',
         require(['Foo'], function(foo){PROVIDE(foo());});
     })`,
     { filenameRelative: 'ModuleName.esn.js' });
+
+let utilBarImportName = '';
+test('file.importYmModule',
+    `import Foo from 'foo';
+    export default 0;`,
+    `ym.modules.define('ModuleName', ['util.Bar', 'foo'], function (PROVIDE, UTILBAR, Foo) {
+        PROVIDE(0);
+    })`,
+    { filenameRelative: 'ModuleName.esn.js' },
+    [function ({ template, types: t }) {
+        return { visitor: { Program() {
+            utilBarImportName = this.file.importYmModule('util.Bar').name;
+        } } };
+    }],
+    () => ({ UTILBAR: utilBarImportName }));
