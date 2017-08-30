@@ -42,3 +42,27 @@ ym.modules.define('MyModule', ['util.id'], function (ppp) {
 - single `export default` per module;
 - special module `'ym'` with `require`, `provide` and `logger` inside;
 - asynchronous export with `provide` from `'ym'` module.
+
+## Usage
+
+`.babelrc`:
+```json
+{
+  "plugins": [
+    ["transform-es2015-modules-ym", {
+      "sourceExtension": ".es6.js"
+    }]
+  ]
+}
+```
+
+If your're using `env` preset, set `modules` to `false` to prevent stop it generating `commonjs` modules by default (see https://babeljs.io/docs/plugins/preset-env/#optionsmodules):
+```json
+{
+  "preset": [
+    ["env", {
+      "modules": false
+    }]
+  ]
+}
+```
