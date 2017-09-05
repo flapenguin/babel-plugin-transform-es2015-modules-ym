@@ -39,6 +39,7 @@ function test(name, source, expected, babelOptions, extraPlugins, extraPlacehold
     const expectedCode = generate(expectedAst, generatorOpts).code;
 
     if (actualCode !== expectedCode) {
+        console.log(source);
         console.log(actualCode);
         console.log(expectedCode);
         assert.equal(actualCode, expectedCode, `${name} failed`);
@@ -83,6 +84,16 @@ test('Multiple imports',
 test('Empty imports',
     `import 'Foo'; import bar from 'Bar'; export default 0;`,
     `ym.modules.define('ModuleName', ['Bar', 'Foo'], function (PROVIDE, bar) { PROVIDE(0); })`,
+    { filenameRelative: 'ModuleName.esn.js' });
+
+test('Function declaration exports',
+    `export default function foo(bar) {bar();};`,
+    `ym.modules.define('ModuleName', [], function (PROVIDE) { function foo(bar){bar();} PROVIDE(foo); })`,
+    { filenameRelative: 'ModuleName.esn.js' });
+
+test('Anonymous function exports',
+    `export default function(bar) {bar();}`,
+    `ym.modules.define('ModuleName', [], function (PROVIDE) { PROVIDE(function(bar){bar();}); });`,
     { filenameRelative: 'ModuleName.esn.js' });
 
 test('ym: dynamic provide',
