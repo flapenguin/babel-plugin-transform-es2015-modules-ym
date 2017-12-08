@@ -14,13 +14,15 @@
     "yms"
   ],
   "scripts": {
-    "test": "node test/index.js"
+    "test": "mocha --reporter spec 'lib/**/*.spec.js'"
   },
   "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-generator": "^6.26.0",
-    "babylon": "^6.18.0"
+    "babylon": "^6.18.0",
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1"
   }
 }

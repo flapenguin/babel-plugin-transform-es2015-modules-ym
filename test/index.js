@@ -49,57 +49,79 @@ function test(name, source, expected, babelOptions, extraPlugins, extraPlacehold
 test('Simple module name',
     `export default 0;`,
     `ym.modules.define('ModuleName', [], function (PROVIDE) { PROVIDE(0); })`,
-    { filenameRelative: 'ModuleName.esn.js' });
+    { filenameRelative: 'ModuleName.js' });
 
 test('Nested module name',
     `export default 0;`,
     `ym.modules.define('a.b.c.d.e.ModuleName', [], function (PROVIDE) { PROVIDE(0); })`,
-    { filenameRelative: 'a/b/c/d/e/ModuleName.esn.js' });
+    { filenameRelative: 'a/b/c/d/e/ModuleName.js' });
 
 test('Nested module name with folder for module',
     `export default 0;`,
     `ym.modules.define('a.b.c.d.ModuleName', [], function (PROVIDE) { PROVIDE(0); })`,
-    { filenameRelative: 'a/b/c/d/moduleName/ModuleName.esn.js' });
+    { filenameRelative: 'a/b/c/d/moduleName/ModuleName.js' });
+
+
+test('Nested module name with folder for module',
+    `export default 0;`,
+    `ym.modules.define('base1.a.b.c.d.ModuleName', [], function (PROVIDE) { PROVIDE(0); })`, {
+        filenameRelative: 'a/b/c/d/moduleName/ModuleName.js',
+        plugins: [
+            [plugin, { moduleBase: 'base1', src: './' } ]
+        ]
+    });
+
+test('Nested module name with folder for module',
+    `export default 0;`,
+    `ym.modules.define('base2.a.b.c.d.ModuleName', [], function (PROVIDE) { PROVIDE(0); })`, {
+        filenameRelative: 'src/a/b/c/d/moduleName/ModuleName.js',
+        plugins: [
+            [plugin, {
+                moduleBase: 'base2',
+                sourceDir: 'src'
+            }]
+        ]
+    });
 
 test('Nested module name with index filename',
     `export default 0;`,
     `ym.modules.define('a.b.c.d.moduleName', [], function (PROVIDE) { PROVIDE(0); })`,
-    { filenameRelative: 'a/b/c/d/moduleName/index.esn.js' });
+    { filenameRelative: 'a/b/c/d/moduleName/index.js' });
 
 test('Simple transformation',
     `import foo from 'Foo'; export default foo.bar;`,
     `ym.modules.define('ModuleName', ['Foo'], function (PROVIDE, foo) { PROVIDE(foo.bar); })`,
-    { filenameRelative: 'ModuleName.esn.js' });
+    { filenameRelative: 'ModuleName.js' });
 
 test('Squash imports',
     `import foo from 'Foo'; import foo2 from 'Foo'; export default 0;`,
     `ym.modules.define('ModuleName', ['Foo'], function (PROVIDE, foo) { var foo2 = foo; PROVIDE(0); })`,
-    { filenameRelative: 'ModuleName.esn.js' });
+    { filenameRelative: 'ModuleName.js' });
 
 test('Multiple imports',
     `import foo from 'Foo'; import bar from 'Bar'; export default 0;`,
     `ym.modules.define('ModuleName', ['Foo', 'Bar'], function (PROVIDE, foo, bar) { PROVIDE(0); })`,
-    { filenameRelative: 'ModuleName.esn.js' });
+    { filenameRelative: 'ModuleName.js' });
 
 test('Empty imports',
     `import 'Foo'; import bar from 'Bar'; export default 0;`,
     `ym.modules.define('ModuleName', ['Bar', 'Foo'], function (PROVIDE, bar) { PROVIDE(0); })`,
-    { filenameRelative: 'ModuleName.esn.js' });
+    { filenameRelative: 'ModuleName.js' });
 
 test('Function declaration exports',
     `export default function foo(bar) {bar();};`,
     `ym.modules.define('ModuleName', [], function (PROVIDE) { function foo(bar){bar();} PROVIDE(foo); })`,
-    { filenameRelative: 'ModuleName.esn.js' });
+    { filenameRelative: 'ModuleName.js' });
 
 test('Anonymous function exports',
     `export default function(bar) {bar();}`,
     `ym.modules.define('ModuleName', [], function (PROVIDE) { PROVIDE(function(bar){bar();}); });`,
-    { filenameRelative: 'ModuleName.esn.js' });
+    { filenameRelative: 'ModuleName.js' });
 
 test('ym: dynamic provide',
     `import {provide} from 'ym'; setTimeout(function() { provide(0); }, 0);`,
     `ym.modules.define('ModuleName', [], function (PROVIDE) { setTimeout(function() { PROVIDE(0); }, 0); })`,
-    { filenameRelative: 'ModuleName.esn.js' });
+    { filenameRelative: 'ModuleName.js' });
 
 test('ym: dynamic require',
     `import {require} from 'ym';
@@ -110,7 +132,7 @@ test('ym: dynamic require',
         require(['Foo'], function(foo){foo();});
         PROVIDE(0);
     })`,
-    { filenameRelative: 'ModuleName.esn.js' });
+    { filenameRelative: 'ModuleName.js' });
 
 test('ym: renaming',
     `import {require as r, provide as p} from 'ym';
@@ -119,7 +141,7 @@ test('ym: renaming',
         var r = ym.modules.require;
         require(['Foo'], function(foo){PROVIDE(foo());});
     })`,
-    { filenameRelative: 'ModuleName.esn.js' });
+    { filenameRelative: 'ModuleName.js' });
 
 let utilBarImportName = '';
 test('file.importYmModule',
@@ -128,7 +150,7 @@ test('file.importYmModule',
     `ym.modules.define('ModuleName', ['util.Bar', 'foo'], function (PROVIDE, UTILBAR, Foo) {
         PROVIDE(0);
     })`,
-    { filenameRelative: 'ModuleName.esn.js' },
+    { filenameRelative: 'ModuleName.js' },
     [function ({ template, types: t }) {
         return { visitor: { Program() {
             utilBarImportName = this.file.importYmModule('util.Bar').name;
