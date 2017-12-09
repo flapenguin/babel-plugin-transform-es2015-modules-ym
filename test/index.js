@@ -89,22 +89,22 @@ test('Nested module name with index filename',
     { filenameRelative: 'a/b/c/d/moduleName/index.js' });
 
 test('Simple transformation',
-    `import foo from 'Foo'; export default foo.bar;`,
+    `import foo from './Foo'; export default foo.bar;`,
     `ym.modules.define('ModuleName', ['Foo'], function (PROVIDE, foo) { PROVIDE(foo.bar); })`,
     { filenameRelative: 'ModuleName.js' });
 
 test('Squash imports',
-    `import foo from 'Foo'; import foo2 from 'Foo'; export default 0;`,
+    `import foo from './Foo'; import foo2 from './Foo'; export default 0;`,
     `ym.modules.define('ModuleName', ['Foo'], function (PROVIDE, foo) { var foo2 = foo; PROVIDE(0); })`,
     { filenameRelative: 'ModuleName.js' });
 
 test('Multiple imports',
-    `import foo from 'Foo'; import bar from 'Bar'; export default 0;`,
+    `import foo from './Foo'; import bar from './Bar'; export default 0;`,
     `ym.modules.define('ModuleName', ['Foo', 'Bar'], function (PROVIDE, foo, bar) { PROVIDE(0); })`,
     { filenameRelative: 'ModuleName.js' });
 
 test('Empty imports',
-    `import 'Foo'; import bar from 'Bar'; export default 0;`,
+    `import './Foo'; import bar from './Bar'; export default 0;`,
     `ym.modules.define('ModuleName', ['Bar', 'Foo'], function (PROVIDE, bar) { PROVIDE(0); })`,
     { filenameRelative: 'ModuleName.js' });
 
@@ -145,7 +145,7 @@ test('ym: renaming',
 
 let utilBarImportName = '';
 test('file.importYmModule',
-    `import Foo from 'foo';
+    `import Foo from './foo';
     export default 0;`,
     `ym.modules.define('ModuleName', ['util.Bar', 'foo'], function (PROVIDE, UTILBAR, Foo) {
         PROVIDE(0);
