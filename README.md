@@ -22,7 +22,7 @@ ym.modules.define('MyModule', ['util.id'], function (_provide, id) {
 ```javascript
 import {require, provide as ppp} from 'ym';
 require(['foo.bar'], function (Bar) {
-    ppp(new Bar());
+  ppp(new Bar());
 });
 ```
 
@@ -31,7 +31,7 @@ require(['foo.bar'], function (Bar) {
 ym.modules.define('MyModule', ['util.id'], function (ppp) {
   var require = ym.modules.require;
   require(['foo.bar'], function (Bar) {
-      ppp(new Bar());
+    ppp(new Bar());
   });
 });
 ```
@@ -56,7 +56,7 @@ ym.modules.define('MyModule', ['util.id'], function (ppp) {
 }
 ```
 
-If your're using `env` preset, set `modules` to `false` to prevent stop it generating `commonjs` modules by default (see https://babeljs.io/docs/plugins/preset-env/#optionsmodules):
+If you're using `env` preset, set `modules` to `false` to prevent it from generating `commonjs` modules by default (see https://babeljs.io/docs/plugins/preset-env/#optionsmodules):
 ```json
 {
   "preset": [
