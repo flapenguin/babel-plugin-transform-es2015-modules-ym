@@ -2,7 +2,7 @@
   "name": "babel-plugin-transform-es2015-modules-ym",
   "version": "0.1.1",
   "description": "This plugin transforms ES2015 modules to ym modules.",
-  "main": "lib/index.js",
+  "main": "lib/transform.js",
   "engines": {
     "node": ">=6.0"
   },
